@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "create-admin": "node scripts/createFirstAdmin.js"
   },
   "keywords": ["node", "express", "mongoose", "socket.io", "jwt", "bcryptjs", "cors", "express-rate-limit", "express-validator", "helmet", "multer", "socket.io"],
   "author": "Bisrat Dereje",

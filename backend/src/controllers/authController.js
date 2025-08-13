@@ -20,20 +20,36 @@ const login = async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
-    if (!user || !(await user.comparePassword(password))) {
+    
+    if (!user) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.json({ 
-      token, 
-      user: { 
-        id: user._id, 
+    
+    const isPasswordValid = await user.comparePassword(password);
+    
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+    
+    // Update last login
+    await User.findByIdAndUpdate(user._id, { lastLogin: new Date() });
+    
+    const token = jwt.sign({ 
+      id: user._id, 
+      role: user.role 
+    }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    
+    res.json({
+      token,
+      user: {
+        id: user._id,
         fullName: user.fullName,
         username: user.username,
         email: user.email,
         profilePic: user.profilePic,
-        bio: user.bio
-      } 
+        bio: user.bio,
+        role: user.role
+      }
     });
   } catch (error) {
     res.status(500).json({ error: 'Login failed' });

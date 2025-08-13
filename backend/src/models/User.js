@@ -10,7 +10,20 @@ const userSchema = new mongoose.Schema({
   bio: { type: String, default: '', maxlength: 160 },
   followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  role: { 
+    type: String, 
+    enum: ['user', 'admin'], 
+    default: 'user' 
+  },
+  isBanned: { type: Boolean, default: false },
+  banReason: { type: String },
+  bannedAt: { type: Date },
+  bannedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  isActive: { type: Boolean, default: true },
+  lastLogin: { type: Date },
   createdAt: { type: Date, default: Date.now },
+}, {
+  timestamps: true
 });
 
 // Hash password before saving
@@ -23,6 +36,11 @@ userSchema.pre('save', async function (next) {
 // Compare password
 userSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
+};
+
+// Check if user is admin
+userSchema.methods.isAdmin = function() {
+  return this.role === 'admin';
 };
 
 module.exports = mongoose.model('User', userSchema);

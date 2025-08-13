@@ -28,7 +28,42 @@ const commentSchema = new mongoose.Schema({
   replies: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Comment'
-  }]
+  }],
+  reported: {
+    type: Boolean,
+    default: false
+  },
+  reports: [{
+    reportedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
+    reason: {
+      type: String,
+      required: true,
+      enum: ['spam', 'inappropriate', 'harassment', 'violence', 'other']
+    },
+    description: {
+      type: String,
+      maxlength: 500
+    },
+    reportedAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
+  isHidden: {
+    type: Boolean,
+    default: false
+  },
+  hiddenBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Admin'
+  },
+  hiddenAt: {
+    type: Date
+  }
 }, {
   timestamps: true
 });

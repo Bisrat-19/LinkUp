@@ -24,6 +24,7 @@ app.use('/api/chat', require('./src/routes/chatRoutes'));
 app.use('/api/notifications', require('./src/routes/notificationRoutes'));
 app.use('/api/search', require('./src/routes/searchRoutes'));
 app.use('/api/profile', require('./src/routes/profileRoutes'));
+app.use('/api/admin', require('./src/routes/adminRoutes'));
 
 
 // File upload error handler
