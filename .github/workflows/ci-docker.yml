@@ -42,8 +42,9 @@ jobs:
       # 7. Run Docker container to check it works
       - name: Run Docker container
         run: |
-          docker run --rm -d --name ci-test my-app:latest
-          # Wait a few seconds to ensure container starts
+          # Start container in detached mode
+          docker run -d --name ci-test my-app:latest
           sleep 5
           docker ps -a
           docker stop ci-test
+          docker rm ci-test
