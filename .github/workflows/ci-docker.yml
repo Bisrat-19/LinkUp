@@ -1,0 +1,50 @@
+name: Node.js CI + Docker
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      # 1. Checkout repo
+      - uses: actions/checkout@v4
+
+      # 2. Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      # 3. Install dependencies
+      - run: npm ci
+
+      # 4. Build project (if exists)
+      - run: npm run build --if-present
+
+      # 5. Run tests (optional, will fail if tests exist and fail)
+      - name: Run tests
+        run: npm test
+        continue-on-error: false   # Fail workflow if tests fail
+
+      # 6. Build Docker image
+      - name: Build Docker image
+        run: docker build -t my-app:latest .
+
+      # 7. Run Docker container to check it works
+      - name: Run Docker container
+        run: |
+          docker run --rm -d --name ci-test my-app:latest
+          # Wait a few seconds to ensure container starts
+          sleep 5
+          docker ps -a
+          docker stop ci-test
